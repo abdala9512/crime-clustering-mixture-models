@@ -1,0 +1,16 @@
+---
+title: "MM Clustering Models"
+author: "Miguel Arquez Abdala"
+date: "19/2/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(leaflet)
+library(dplyr)
+library(readxl)
+```
