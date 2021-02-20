@@ -2,15 +2,42 @@
 title: "MM Clustering Models"
 author: "Miguel Arquez Abdala"
 date: "19/2/2021"
-output: html_document
+output:
+  rmdformats::robobook
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+
+# Title
+
+```{r message=FALSE,warning=FALSE}
 library(leaflet)
 library(dplyr)
 library(readxl)
+library(ggplot2)
+library(spatstat)
+library(sf)
+library(geojsonio)
 ```
+
+
+
+```{r warning=FALSE}
+
+bogota_json <- readLines("../geodata/upla.json") %>%  paste(collapse = "\n")
+m <- leaflet(options = leafletOptions(minZoom = 0, maxZoom = 18)) %>% 
+  addTiles() %>% 
+  setView(lng = -74.10002385122866 , lat = 4.636962048294948, zoom = 10) %>% 
+  addGeoJSON(bogota_json, weight = 1, color = "#444444", fill = TRUE)
+m
+```
+
+
+# Sources
+
+* [Github](https://github.com/abdala9512/crime-clustering-mixture-models)
+* [Spatial modelling for data scientists](https://gdsl-ul.github.io/san/overview.html)
+* [Secretaria de seguridad Bogota](https://scj.gov.co/es/oficina-oaiee/estadisticas-mapas)
