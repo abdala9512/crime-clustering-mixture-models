@@ -17,10 +17,13 @@ knitr::opts_chunk$set(echo = TRUE)
 library(leaflet)
 library(dplyr)
 library(readxl)
+library(readr)
 library(ggplot2)
 library(spatstat)
 library(sf)
 library(geojsonio)
+library(knitr)
+library(magrittr)
 ```
 
 
@@ -34,6 +37,67 @@ m <- leaflet(options = leafletOptions(minZoom = 0, maxZoom = 18)) %>%
   addGeoJSON(bogota_json, weight = 1, color = "#444444", fill = TRUE)
 m
 ```
+
+# Analisis delitos
+
+```{r message=FALSE}
+crimes_bogota <- read_csv("../data/delitos_bogota.csv")
+crimes_bogota %<>% rename(mes_n = `Nro del Mes`,
+                          week_day = `Nombre Dia`,
+                          time_zone = `Rango del Dia`)
+months_ <-  unique(crimes_bogota$Mes)
+weekdays_ <- unique(crimes_bogota$week_day)
+
+crimes_bogota$Año <- as.character(crimes_bogota$Año)
+crimes_bogota$Mes <- factor(crimes_bogota$Mes, levels = months_)
+crimes_bogota$week_day <- factor(crimes_bogota$week_day, levels = weekdays_)
+
+```
+```{r}
+kable(head(crimes_bogota))
+
+```
+
+```{r}
+crimes_bogota  %>% ggplot() + geom_bar(aes(x = Año)) + theme_minimal()
+```
+
+
+```{r}
+crimes_bogota %>% 
+  group_by(Año, Mes) %>% count() %>% 
+  ggplot() + geom_bar(aes(x = Mes , y = n, fill = Año),
+                      position = "dodge",
+                      stat = "identity") +
+  theme_minimal() + scale_x_discrete(limits = months_)
+```
+
+
+```{r}
+crimes_bogota %>% group_by(Año, week_day) %>% count() %>% 
+  ggplot() + geom_bar(aes(x = week_day , y = n, fill = Año),
+                      position = "dodge",
+                      stat = "identity") +
+  theme_minimal() + scale_x_discrete(limits = weekdays_)
+```
+
+```{r}
+crimes_bogota %>% group_by(Año, time_zone) %>% count() %>% 
+  ggplot() + geom_bar(aes(x = time_zone , y = n, fill = Año),
+                      position = "dodge",
+                      stat = "identity") +
+  theme_minimal() 
+```
+
+
+```{r}
+crimes_bogota %>% group_by(Año, Localidad) %>% count() %>% 
+  ggplot() + geom_bar(aes(x = Localidad , y = n, fill = Año),
+                      position = "dodge",
+                      stat = "identity") +
+  theme_minimal() + coord_flip()
+```
+
 
 
 # Sources
